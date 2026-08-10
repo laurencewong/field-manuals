@@ -7,11 +7,22 @@ No build step, no framework, no server.
 ```
 index.html                       the whole storefront (design + copy + logic)
 guides/
-  governed-agent-boundary-kit.pdf   Guide #1 — downloads on unlock
-  headless-claude-runners.pdf       Guide #2 — downloads on unlock
+  governed-agent-boundary-kit.pdf   FM-01 — downloads on unlock
+  headless-claude-runners.pdf       FM-02 — downloads on unlock
+fonts/
+  archivo-latin-var.woff2           self-hosted display face (variable, 100–900)
+  OFL.txt                           Archivo license (SIL OFL 1.1)
 CNAME.example                    custom-domain placeholder (rename to CNAME)
 .nojekyll                         serve files as-is, skip Jekyll
 ```
+
+The display font (**Archivo**, © The Archivo Project Authors) is self-hosted, not
+CDN-loaded — no external dependency at runtime, and the weight ladder is real
+rather than snapped to the system font's nearest weight. It is licensed under the
+SIL Open Font License 1.1 (`fonts/OFL.txt`).
+
+> **Note:** the page carries no build/version changelog in its footer — that kind
+> of internal note lives here in the README only, never on the live storefront.
 
 The loyalty dataset is **preview-only** on the page — there is intentionally no
 PDF for it, and its card offers a list join, not a download.
