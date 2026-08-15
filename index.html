@@ -245,7 +245,7 @@
   <div class="band">
     <p class="lbl">The catalog</p>
     <h2>Three drops. Each one earns its keep against the free answer.</h2>
-    <p class="blurb">Drop your email to unlock the download. No account, no spam — the email is your key, and the PDF downloads on the spot.</p>
+    <p class="blurb">Drop your email to unlock the download. No account, no spam — the email is your key, and the PDF downloads on the spot. By entering it you'll also get the occasional Field Manuals update; unsubscribe anytime, and we never sell your address (<a href="#privacy">privacy</a>).</p>
 
     <div class="grid">
 
@@ -382,6 +382,7 @@ every later fire silently skipped · rc=0 · no alert</code></div>
     <p class="end"><span class="stamp">End of catalog</span></p>
     <p class="byline"><b>Field Manuals</b> — production notes from Laurence Wong, who runs a live multi-agent fleet in production. Every guide is free.</p>
     <p class="mono">Your email is the key: it unlocks the PDF on the spot. No account, no spam.</p>
+    <p class="mono" id="privacy" style="margin-top:14px;opacity:.82"><b>Privacy.</b> We collect only the email you enter — to send you the guide and the occasional Field Manuals update. We never sell or share it. Unsubscribe or ask us to delete your data anytime: just reply to any email you get from us. We keep basic anonymous visit counts to see which guides get read — no cross-site tracking, no ad cookies.</p>
   </footer>
 
 </div>
@@ -412,6 +413,11 @@ every later fire silently skipped · rc=0 · no alert</code></div>
     }catch(e){}
   }
 
+  // No-account activity tracking (abacus hit counter). Read counts anytime at
+  // https://abacus.jasoncameron.dev/get/field-manuals/<key>  (keys: pageview, unlock-boundary/runners/loyalty)
+  function track(key){ try{ fetch("https://abacus.jasoncameron.dev/hit/field-manuals/"+key).catch(function(){}); }catch(e){} }
+  track("pageview");
+
   function code(email){
     var s=0; for(var i=0;i<email.length;i++){ s=(s*31 + email.charCodeAt(i))>>>0; }
     var A="ABCDEFGHJKMNPQRSTUVWXYZ23456789", out="";
@@ -432,6 +438,7 @@ every later fire silently skipped · rc=0 · no alert</code></div>
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){ err.textContent="Enter a valid email — it’s your key."; return; }
       err.textContent="";
       postEmail(v, id);
+      track("unlock-"+id);
       var done=document.getElementById("done-"+id);
       done.querySelector(".code").textContent=code(v);
       flow.classList.remove("open"); done.classList.add("open");
