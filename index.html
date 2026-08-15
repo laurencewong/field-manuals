@@ -396,7 +396,10 @@ every later fire silently skipped · rc=0 · no alert</code></div>
      e.g. "https://formspree.io/f/xxxxxxxx". See README.md for the
      exact steps. Nothing is sent anywhere until this is set.
   ------------------------------------------------------------------ */
-  var EMAIL_ENDPOINT = null;
+  // No-account form relay (FormSubmit), wired to a random alias so the
+  // destination email is never exposed in this public source. Delivers to
+  // Laurence's inbox; swap the token to change the destination.
+  var EMAIL_ENDPOINT = "https://formsubmit.co/ajax/a366865c693e8a2006ca7c489a111d47";
 
   function postEmail(email, guide){
     if(!EMAIL_ENDPOINT) return;               // not configured — no-op
@@ -404,7 +407,7 @@ every later fire silently skipped · rc=0 · no alert</code></div>
       fetch(EMAIL_ENDPOINT, {
         method:"POST",
         headers:{"Content-Type":"application/json","Accept":"application/json"},
-        body:JSON.stringify({email:email, guide:guide})
+        body:JSON.stringify({email:email, guide:guide, _subject:"New Field Manuals signup", _template:"table"})
       }).catch(function(){});                  // best-effort; never blocks the download
     }catch(e){}
   }
