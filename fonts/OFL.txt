@@ -1,4 +1,10 @@
-Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
+Copyright 2011 The Anton Project Authors (https://github.com/googlefonts/AntonFont)
+Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
+Copyright 2017 IBM Corp. — IBM Plex Mono (https://github.com/IBM/plex)
+Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo) — retired from this storefront, notice retained
+
+The Field Manuals storefront ships Anton, Space Grotesk, and IBM Plex Mono.
+All are licensed under the SIL Open Font License, Version 1.1 (below).
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

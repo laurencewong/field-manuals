@@ -1,109 +1,162 @@
 <title>Field Manuals — the mechanism, not the listicle</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Field manuals for people running AI agents in production. The runnable mechanism, the pass/fail tests, and dated logs of it breaking on a real fleet.">
+<meta name="description" content="Field manuals from an operator who reads loyalty programs like balance sheets — and runs the agent fleet that reprices them. The runnable mechanism, the pass/fail tests, and dated logs of it breaking on a real fleet.">
 <style>
-  /* Self-hosted display face — Archivo variable (SIL OFL 1.1, see fonts/OFL.txt).
-     Self-hosted, not CDN-loaded, so the weight ladder is real and there is no
-     external dependency. Honors the full 100–900 axis the design asks for. */
+  /* Self-hosted type — the locked field-manual stack (all SIL OFL 1.1, see fonts/OFL.txt).
+     Self-hosted, not CDN-loaded, so there is no external dependency.
+       Anton          — display / shout: h1, doc numbers, card titles
+       IBM Plex Mono  — the load-bearing mono furniture: spec blocks, stamps, labels
+       Space Grotesk  — running body (variable 300–700) */
   @font-face{
-    font-family:"Archivo";
-    src:url("fonts/archivo-latin-var.woff2") format("woff2");
-    font-weight:100 900; font-style:normal; font-display:swap;
+    font-family:"Anton";
+    src:url("fonts/anton-latin.woff2") format("woff2");
+    font-weight:400; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:"IBM Plex Mono";
+    src:url("fonts/ibm-plex-mono-400-latin.woff2") format("woff2");
+    font-weight:400; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:"IBM Plex Mono";
+    src:url("fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+    font-weight:500; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:"IBM Plex Mono";
+    src:url("fonts/ibm-plex-mono-600-latin.woff2") format("woff2");
+    font-weight:600; font-style:normal; font-display:swap;
+  }
+  @font-face{
+    font-family:"Space Grotesk";
+    src:url("fonts/space-grotesk-latin-var.woff2") format("woff2");
+    font-weight:300 700; font-style:normal; font-display:swap;
   }
 
+  /* --- the locked brand palette (brand-book §5a) -----------------------------
+     cream ground · oxblood carries the display + the argument · green is the
+     functional "verified" accent · amber is the rarest — one key figure per
+     surface · gray is metadata. No teal. */
   :root{
-    --bg:#f4f2ec; --panel:#fffdf8; --ink:#191a17; --soft:#5f5e56; --faint:#6f6d63;
-    --line:rgba(20,20,18,.15); --hard:rgba(20,20,18,.30);
-    --accent:#0f7d6e; --accent-ink:#0d6f61;
-    --mat:#e9e6dc; --chip:#ece9df; --deny:#a83a2c; --seal:#0f7d6e;
+    --bg:#F5EFE3; --panel:#FBF6EA; --ink:#1A140F; --soft:#6E6557; --faint:#857A68;
+    --line:rgba(40,26,18,.14); --hard:rgba(40,26,18,.28);
+    --oxblood:#4C1212; --green:#2F7A4D; --amber:#FFB000;
+    --display:#4C1212; --link:#4C1212; --deny:#4C1212; --seal:#4C1212;
+    --cta-bg:#4C1212; --cta-ink:#F5EFE3;
+    --mat:#ECE5D6; --chip:#EDE6D6;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
     --grid:color-mix(in srgb,var(--ink) 5%,transparent);
     --r:3px;
   }
+  /* dark ops — the same system in a dark terminal: display goes cream (oxblood is
+     too dark to display on a dark field), green lifts, amber holds, CTA stays
+     oxblood-family. (brand-book §5a · Ray P3) */
   @media (prefers-color-scheme:dark){
     :root{
-      --bg:#0b0e0d; --panel:#12160f; --ink:#eceae2; --soft:#a7a89d; --faint:#8b8d81;
-      --line:rgba(255,255,255,.13); --hard:rgba(255,255,255,.26);
-      --accent:#43c9b4; --accent-ink:#5bd6c2;
-      --mat:#0f130e; --chip:#182220; --deny:#e0836f; --seal:#43c9b4;
+      --bg:#14100C; --panel:#1B1611; --ink:#ECE7DD; --soft:#A79C8B; --faint:#8B8172;
+      --line:rgba(255,248,240,.12); --hard:rgba(255,248,240,.24);
+      --oxblood:#4C1212; --green:#4F9E6E; --amber:#FFB000;
+      --display:#F5EFE3; --link:#D98E70; --deny:#E08A6F; --seal:#F5EFE3;
+      --cta-bg:#7E2323; --cta-ink:#F5EFE3;
+      --mat:#181410; --chip:#241E17;
       --grid:color-mix(in srgb,var(--ink) 7%,transparent);
     }
   }
   :root[data-theme="light"]{
-    --bg:#f4f2ec; --panel:#fffdf8; --ink:#191a17; --soft:#5f5e56; --faint:#6f6d63;
-    --line:rgba(20,20,18,.15); --hard:rgba(20,20,18,.30);
-    --accent:#0f7d6e; --accent-ink:#0d6f61;
-    --mat:#e9e6dc; --chip:#ece9df; --deny:#a83a2c; --seal:#0f7d6e;
+    --bg:#F5EFE3; --panel:#FBF6EA; --ink:#1A140F; --soft:#6E6557; --faint:#857A68;
+    --line:rgba(40,26,18,.14); --hard:rgba(40,26,18,.28);
+    --oxblood:#4C1212; --green:#2F7A4D; --amber:#FFB000;
+    --display:#4C1212; --link:#4C1212; --deny:#4C1212; --seal:#4C1212;
+    --cta-bg:#4C1212; --cta-ink:#F5EFE3;
+    --mat:#ECE5D6; --chip:#EDE6D6;
     --grid:color-mix(in srgb,var(--ink) 5%,transparent);
   }
   :root[data-theme="dark"]{
-    --bg:#0b0e0d; --panel:#12160f; --ink:#eceae2; --soft:#a7a89d; --faint:#8b8d81;
-    --line:rgba(255,255,255,.13); --hard:rgba(255,255,255,.26);
-    --accent:#43c9b4; --accent-ink:#5bd6c2;
-    --mat:#0f130e; --chip:#182220; --deny:#e0836f; --seal:#43c9b4;
+    --bg:#14100C; --panel:#1B1611; --ink:#ECE7DD; --soft:#A79C8B; --faint:#8B8172;
+    --line:rgba(255,248,240,.12); --hard:rgba(255,248,240,.24);
+    --oxblood:#4C1212; --green:#4F9E6E; --amber:#FFB000;
+    --display:#F5EFE3; --link:#D98E70; --deny:#E08A6F; --seal:#F5EFE3;
+    --cta-bg:#7E2323; --cta-ink:#F5EFE3;
+    --mat:#181410; --chip:#241E17;
     --grid:color-mix(in srgb,var(--ink) 7%,transparent);
   }
 
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Archivo",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-family:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;line-height:1.6;font-size:17px;font-weight:400;letter-spacing:-.003em}
-  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  .mono{font-family:var(--mono)}
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  a{color:var(--accent-ink);text-decoration:none}
+  a{color:var(--link);text-decoration:none}
 
   /* --- document furniture -------------------------------------------------- */
-  .stamp{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;letter-spacing:.15em;
+  .stamp{font-family:var(--mono);font-size:9.5px;letter-spacing:.15em;
     text-transform:uppercase;border:1px solid var(--hard);color:var(--soft);
     padding:3px 7px;border-radius:2px;display:inline-block;line-height:1;white-space:nowrap}
-  .stamp.verified{border-color:color-mix(in srgb,var(--accent) 55%,var(--hard));color:var(--accent-ink)}
+  .stamp.verified{border-color:color-mix(in srgb,var(--green) 55%,var(--hard));color:var(--green)}
+
+  /* amber hazard highlighter — the one key-figure / escalation callout per
+     surface. A bright marker with near-black ink reads in both modes. */
+  .hot{background:var(--amber);color:#241a08;font-weight:700;
+    padding:0 5px;border-radius:2px;white-space:nowrap}
 
   .top{display:flex;justify-content:space-between;align-items:center;
     padding:20px 0;border-bottom:1px solid var(--line)}
   .brand{display:flex;align-items:center;gap:11px}
   .seal{width:34px;height:26px;border:1.5px solid var(--seal);border-radius:2px;
     display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;
-    color:var(--seal);font-family:ui-monospace,Menlo,monospace;letter-spacing:.06em;flex:none}
+    color:var(--seal);font-family:var(--mono);letter-spacing:.06em;flex:none}
   .brand b{font-size:15px;font-weight:700;letter-spacing:.01em}
 
   header.hero{padding:74px 0 48px;border-bottom:1px solid var(--line)}
-  .kicker{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--accent-ink);margin:0 0 22px}
-  h1{font-size:clamp(38px,6.4vw,68px);line-height:1.0;letter-spacing:-.03em;font-weight:800;
-    margin:0 0 26px;max-width:15ch;text-wrap:balance}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--oxblood);margin:0 0 22px;max-width:60ch;line-height:1.5}
+  h1{font-family:"Anton",system-ui,sans-serif;font-size:clamp(44px,7vw,80px);line-height:1.0;
+    letter-spacing:-.01em;font-weight:400;color:var(--display);
+    margin:0 0 26px;max-width:16ch;text-wrap:balance}
   .subline{font-size:clamp(18px,2.3vw,22px);line-height:1.45;color:var(--soft);
     max-width:52ch;margin:0;font-weight:400}
   .subline b{color:var(--ink);font-weight:600}
+  .frame{font-size:clamp(16px,2vw,18.5px);line-height:1.5;color:var(--soft);
+    max-width:56ch;margin:20px 0 0;font-weight:400}
+  .frame b{color:var(--ink);font-weight:600}
 
-  /* the position, given its own beat (was buried at the tail of the subline) */
-  .claim{margin:34px 0 0;border-left:3px solid var(--accent);padding:4px 0 4px 20px}
-  .claim .lbl{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.18em;
-    text-transform:uppercase;color:var(--faint);margin:0 0 8px}
+  /* balance-sheet proof-of-thesis line — surfaced up top from DS-01 */
+  .thesis{margin:26px 0 0;border-left:3px solid var(--green);padding:4px 0 4px 20px;
+    font-family:var(--mono);font-size:14px;line-height:1.65;color:var(--soft);max-width:60ch}
+  .thesis b{color:var(--ink);font-weight:600}
+  .thesis .filed{color:var(--green);font-weight:600}
+
+  /* the position, given its own beat */
+  .claim{margin:34px 0 0;border-left:3px solid var(--oxblood);padding:4px 0 4px 20px}
+  .claim .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--soft);margin:0 0 8px}
   .claim p{margin:0;font-size:clamp(19px,2.5vw,25px);line-height:1.3;font-weight:600;
-    letter-spacing:-.02em;max-width:28ch;text-wrap:balance}
+    letter-spacing:-.02em;max-width:28ch;text-wrap:balance;color:var(--ink)}
 
   /* on-page receipt, before any email wall */
   .specimen{margin:40px 0 0;border:1px solid var(--hard);border-radius:var(--r);
     background:var(--panel);overflow:hidden}
   .spec-hd{display:flex;justify-content:space-between;align-items:center;gap:12px;
     padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-  .spec-hd .lbl{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.15em;
-    text-transform:uppercase;color:var(--accent-ink)}
-  .spec-hd .src{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:.06em;color:var(--faint)}
+  .spec-hd .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--soft)}
+  .spec-hd .src{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--faint)}
   .receipt{margin:0;padding:16px;overflow-x:auto;background:
     repeating-linear-gradient(0deg,transparent 0 25px,var(--grid) 25px 26px),var(--mat)}
-  .receipt code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.9;
+  .receipt code{font-family:var(--mono);font-size:12.5px;line-height:1.9;
     color:var(--ink);white-space:pre;display:block}
   .receipt .d{color:var(--deny);font-weight:700}
-  .receipt .a{color:var(--accent-ink);font-weight:700}
+  .receipt .a{color:var(--green);font-weight:700}
   .receipt .dim{color:var(--faint)}
   .spec-cap{margin:0;padding:14px 16px 16px;font-size:14px;line-height:1.55;color:var(--soft);
     border-top:1px solid var(--line)}
   .spec-cap b{color:var(--ink);font-weight:600}
 
   .band{padding:56px 0 8px}
-  .lbl{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--accent-ink);margin:0 0 6px}
-  .band > h2{font-size:clamp(23px,3vw,30px);font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+  .lbl{font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--soft);margin:0 0 6px}
+  .band > h2{font-size:clamp(23px,3vw,30px);font-weight:700;letter-spacing:-.02em;margin:0 0 4px;color:var(--ink)}
   .band > p.blurb{color:var(--soft);max-width:56ch;margin:6px 0 0}
 
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:34px 0 0}
@@ -117,59 +170,56 @@
     background:repeating-linear-gradient(0deg,transparent 0 26px,var(--grid) 26px 27px),var(--mat);
     min-height:196px;display:flex;flex-direction:column}
   .cover.dataset{background:
-    repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--accent) 12%,transparent) 27px 28px),
-    repeating-linear-gradient(90deg,transparent 0 27px,color-mix(in srgb,var(--accent) 12%,transparent) 27px 28px),
+    repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--green) 14%,transparent) 27px 28px),
+    repeating-linear-gradient(90deg,transparent 0 27px,color-mix(in srgb,var(--green) 14%,transparent) 27px 28px),
     var(--mat)}
   .cvr-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:0 0 4px}
-  .docno{font-family:ui-monospace,Menlo,monospace;font-size:32px;line-height:1;letter-spacing:-.02em;
-    font-weight:600;color:var(--ink)}
-  .docno small{display:block;font-size:9px;letter-spacing:.2em;color:var(--faint);margin:0 0 5px;font-weight:400}
+  .docno{font-family:"Anton",system-ui,sans-serif;font-size:34px;line-height:1;letter-spacing:.01em;
+    font-weight:400;color:var(--display)}
+  .docno small{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--faint);margin:0 0 5px;font-weight:400}
   .stamp-stack{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-  .ctitle{font-size:21px;line-height:1.14;font-weight:700;letter-spacing:-.018em;margin:12px 0 0;text-wrap:balance}
+  .ctitle{font-family:"Anton",system-ui,sans-serif;font-size:22px;line-height:1.12;font-weight:400;
+    letter-spacing:0;margin:12px 0 0;text-wrap:balance;color:var(--display)}
 
   /* FM-01 — gate/control-surface: real allow/deny verdicts */
   .gate{margin:auto 0 0;display:flex;flex-wrap:wrap;gap:8px;padding:12px 0 0}
-  .verdict{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.02em;
+  .verdict{font-family:var(--mono);font-size:11px;letter-spacing:.02em;
     border:1px solid var(--hard);border-radius:2px;padding:5px 9px;line-height:1;white-space:nowrap}
   .verdict.deny{color:var(--deny);border-color:color-mix(in srgb,var(--deny) 50%,var(--hard))}
-  .verdict.allow{color:var(--accent-ink);border-color:color-mix(in srgb,var(--accent) 50%,var(--hard))}
+  .verdict.allow{color:var(--green);border-color:color-mix(in srgb,var(--green) 50%,var(--hard))}
 
   /* FM-02 — incident-log treatment */
   .log{margin:auto 0 0;padding:10px 0 0;overflow-x:auto}
-  .log code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.7;
+  .log code{font-family:var(--mono);font-size:11.5px;line-height:1.7;
     color:var(--soft);white-space:pre;display:block}
   .log code .ts{color:var(--ink);font-weight:700}
-  .log code .hot{color:var(--deny);font-weight:700}
 
   .cbody{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1}
   .spec{display:grid;grid-template-columns:auto 1fr;gap:2px 14px;margin:0 0 18px;
-    font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.7}
+    font-family:var(--mono);font-size:11px;line-height:1.7}
   .spec dt{color:var(--faint);letter-spacing:.12em;text-transform:uppercase}
   .spec dd{margin:0;color:var(--soft)}
   .spec dd b{color:var(--ink);font-weight:700}
   .hook{font-size:15.5px;line-height:1.5;color:var(--soft);margin:0 0 16px}
   .hook b{color:var(--ink);font-weight:600}
   ul.inside{list-style:none;margin:0 0 20px;padding:0}
-  ul.inside li{position:relative;padding-left:19px;margin:0 0 9px;font-size:14.5px;line-height:1.45}
+  ul.inside li{position:relative;padding-left:19px;margin:0 0 9px;font-size:14.5px;line-height:1.45;color:var(--ink)}
   ul.inside li::before{content:"";position:absolute;left:1px;top:.62em;width:6px;height:6px;
-    background:var(--accent);border-radius:1px;transform:rotate(45deg)}
+    background:var(--green);border-radius:1px;transform:rotate(45deg)}
   ul.inside li b{font-weight:600}
-  .stat{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--ink);
+  .stat{font-family:var(--mono);font-size:12.5px;color:var(--ink);
     background:var(--chip);border:1px solid var(--line);border-radius:var(--r);padding:11px 13px;margin:0 0 20px;line-height:1.5}
-  .stat b{color:var(--accent-ink)}
+  .stat b{color:var(--green)}
   .foot{margin-top:auto}
-  .price{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;color:var(--faint);
+  .price{font-family:var(--mono);font-size:12.5px;color:var(--faint);
     margin:0 0 11px;letter-spacing:.02em}
   .price b{color:var(--ink)}
 
   .cta{display:inline-flex;width:100%;justify-content:center;align-items:center;gap:8px;
-    background:var(--accent);color:#fff;border:0;border-radius:var(--r);padding:13px 16px;
+    background:var(--cta-bg);color:var(--cta-ink);border:0;border-radius:var(--r);padding:13px 16px;
     font-size:15px;font-weight:600;letter-spacing:-.01em;cursor:pointer;font-family:inherit;
     transition:filter .15s,transform .05s}
-  @media (prefers-color-scheme:dark){.cta{color:#04100e}}
-  :root[data-theme="dark"] .cta{color:#04100e}
-  :root[data-theme="light"] .cta{color:#fff}
-  .cta:hover{filter:brightness(1.06)}
+  .cta:hover{filter:brightness(1.08)}
   .cta:active{transform:translateY(1px)}
   .flow{display:none;margin-top:4px}
   .flow.open{display:block;animation:fade .2s ease}
@@ -177,33 +227,30 @@
   .row{display:flex;gap:8px}
   .flow input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--hard);border-radius:var(--r);
     padding:12px 13px;font-size:14.5px;color:var(--ink);font-family:inherit}
-  .flow input:focus{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:1px}
+  .flow input:focus{outline:2px solid color-mix(in srgb,var(--oxblood) 55%,transparent);outline-offset:1px}
   .flow .go{flex:none;background:var(--ink);color:var(--bg);border:0;border-radius:var(--r);
     padding:0 16px;font-weight:600;cursor:pointer;font-family:inherit;font-size:14.5px}
   .err{color:var(--deny);font-size:12.5px;margin:7px 2px 0}
   .done{display:none;margin-top:4px;background:var(--chip);border:1px solid var(--hard);
     border-radius:var(--r);padding:16px}
   .done.open{display:block;animation:fade .25s ease}
-  .done .clbl{font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.12em;
+  .done .clbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
     text-transform:uppercase;color:var(--faint);margin:0 0 3px}
-  .done .code{font-family:ui-monospace,Menlo,monospace;font-size:20px;letter-spacing:.12em;
-    color:var(--accent-ink);font-weight:700;margin:2px 0 8px}
+  .done .code{font-family:var(--mono);font-size:20px;letter-spacing:.12em;
+    color:var(--green);font-weight:700;margin:2px 0 8px}
   .done p{margin:0;font-size:13.5px;color:var(--soft);line-height:1.5}
   .dl{display:inline-flex;width:100%;justify-content:center;align-items:center;gap:8px;
-    margin:14px 0 0;background:var(--accent);color:#fff;border-radius:var(--r);padding:12px 16px;
+    margin:14px 0 0;background:var(--cta-bg);color:var(--cta-ink);border-radius:var(--r);padding:12px 16px;
     font-size:14.5px;font-weight:600;letter-spacing:-.01em;text-decoration:none;font-family:inherit}
-  @media (prefers-color-scheme:dark){.dl{color:#04100e}}
-  :root[data-theme="dark"] .dl{color:#04100e}
-  :root[data-theme="light"] .dl{color:#fff}
-  .dl:hover{filter:brightness(1.06)}
+  .dl:hover{filter:brightness(1.08)}
 
   .ethos{margin:64px 0 0;padding:38px 0;border-top:1px solid var(--hard);border-bottom:1px solid var(--hard)}
-  .ethos h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.02em;margin:0 0 26px;max-width:20ch;text-wrap:balance}
+  .ethos h2{font-size:clamp(23px,3vw,31px);font-weight:700;letter-spacing:-.02em;margin:0 0 26px;max-width:20ch;text-wrap:balance;color:var(--ink)}
   .three{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
   @media (max-width:760px){.three{grid-template-columns:1fr;gap:22px}}
   .three .fn{border-top:2px solid var(--hard);padding-top:14px}
-  .three h3{font-size:16px;font-weight:700;margin:0 0 7px;letter-spacing:-.01em}
-  .three h3 span{font-family:ui-monospace,Menlo,monospace;color:var(--accent-ink);font-size:12px;margin-right:9px}
+  .three h3{font-size:16px;font-weight:700;margin:0 0 7px;letter-spacing:-.01em;color:var(--ink)}
+  .three h3 span{font-family:var(--mono);color:var(--oxblood);font-size:12px;margin-right:9px}
   .three p{margin:0;font-size:14.5px;color:var(--soft);line-height:1.5}
 
   footer{padding:38px 0 70px;color:var(--faint);font-size:13px;line-height:1.6}
@@ -222,9 +269,13 @@
   </div>
 
   <header class="hero">
-    <p class="kicker">Field manuals for people running AI agents in production</p>
+    <p class="kicker">Field manuals from an operator who reads loyalty programs like balance sheets — and runs the agent fleet that reprices them</p>
     <h1>The mechanism, not the listicle.</h1>
-    <p class="subline">Every free guide names the goal — “least privilege,” “human in the loop.” These hand you the <b>actual runnable mechanism</b>, the pass/fail tests, and the dated logs of it breaking on a real fleet. Written by <b>Laurence Wong</b>, who runs a live multi-agent fleet in production.</p>
+    <p class="subline">Every free guide names the goal — “least privilege,” “human in the loop.” These hand you the <b>actual runnable mechanism</b>, the pass/fail tests, and the dated logs of it breaking on a real fleet. Written by <b>Laurence Wong</b> — he reads loyalty programs like balance sheets, and runs a live multi-agent fleet in production.</p>
+
+    <p class="frame">These are the notes from running a company as one operator: the controls that let agents run unattended, and the <b>loyalty economics I read the same way I read a balance sheet.</b></p>
+
+    <p class="thesis">American’s <b>AAdvantage</b> loyalty liability is a filed <span class="hot">$11.573B</span> — larger than the airline’s entire <span class="filed">$10.9B</span> market cap. Filed, cited, reproducible.</p>
 
     <div class="claim">
       <p class="lbl">The standard every manual clears</p>
@@ -244,8 +295,8 @@
 
   <div class="band">
     <p class="lbl">The catalog</p>
-    <h2>Three drops. Each one earns its keep against the free answer.</h2>
-    <p class="blurb">Drop your email to unlock the download. No account, no spam — the email is your key, and the PDF downloads on the spot. By entering it you'll also get the occasional Field Manuals update; unsubscribe anytime, and we never sell your address (<a href="#privacy">privacy</a>).</p>
+    <h2>Three manuals. Each earns its keep against the free answer.</h2>
+    <p class="blurb">Drop your email to unlock the download. No account, no spam — the email is your key, and the PDF downloads on the spot. By entering it you’ll also get the occasional Field Manuals update. Unsubscribe anytime, and we never sell your address (<a href="#privacy">privacy</a>).</p>
 
     <div class="grid">
 
@@ -345,15 +396,15 @@ every later fire silently skipped · rc=0 · no alert</code></div>
         </div>
         <div class="cbody">
           <dl class="spec">
-            <dt>Status</dt><dd><b>Preview</b> · drops on a future cycle</dd>
+            <dt>Status</dt><dd><b>Preview</b> · ships on a future cycle</dd>
             <dt>Source</dt><dd>SEC filings · refreshed per 10-Q</dd>
             <dt>Rule</dt><dd>FILED and MODELED never share a column</dd>
           </dl>
           <p class="hook">A filings-sourced dataset of loyalty-program economics — read straight off SEC filings, refreshed as each 10-Q lands. <b>FILED numbers and MODELED numbers never share a column.</b></p>
-          <div class="stat">Preview · Teardown #1 — American’s <b>AAdvantage</b> loyalty liability is a filed <b>$11.573B</b> at 2026-06-30, larger than its entire <b>$10.9B</b> equity market cap. Filed, cited, reproducible — a leverage signal, not a valuation.</div>
+          <div class="stat">Preview · Teardown #1 — American’s <b>AAdvantage</b> loyalty liability is a filed <span class="hot">$11.573B</span> at 2026-06-30, larger than its entire <b>$10.9B</b> equity market cap. Filed, cited, reproducible — a leverage signal, not a valuation.</div>
           <div class="foot">
-            <p class="price">Preview only · dataset drops on a future refresh cycle</p>
-            <button class="cta" data-id="loyalty">Join the drop list →</button>
+            <p class="price">Preview only · dataset ships on a future refresh cycle</p>
+            <button class="cta" data-id="loyalty">Join the list →</button>
             <div class="flow" id="flow-loyalty">
               <div class="row"><input type="email" placeholder="you@company.com" aria-label="email"><button class="go">Join</button></div>
               <div class="err"></div>
@@ -380,7 +431,7 @@ every later fire silently skipped · rc=0 · no alert</code></div>
 
   <footer>
     <p class="end"><span class="stamp">End of catalog</span></p>
-    <p class="byline"><b>Field Manuals</b> — production notes from Laurence Wong, who runs a live multi-agent fleet in production. Every guide is free.</p>
+    <p class="byline"><b>Field Manuals</b> — production notes from Laurence Wong, who reads loyalty programs like balance sheets and runs a live multi-agent fleet in production. Every guide is free.</p>
     <p class="mono">Your email is the key: it unlocks the PDF on the spot. No account, no spam.</p>
     <p class="mono" id="privacy" style="margin-top:14px;opacity:.82"><b>Privacy.</b> We collect only the email you enter — to send you the guide and the occasional Field Manuals update. We never sell or share it. Unsubscribe or ask us to delete your data anytime: just reply to any email you get from us. We keep basic anonymous visit counts to see which guides get read — no cross-site tracking, no ad cookies.</p>
   </footer>

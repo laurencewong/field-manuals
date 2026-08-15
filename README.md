@@ -10,16 +10,18 @@ guides/
   governed-agent-boundary-kit.pdf   FM-01 — downloads on unlock
   headless-claude-runners.pdf       FM-02 — downloads on unlock
 fonts/
-  archivo-latin-var.woff2           self-hosted display face (variable, 100–900)
-  OFL.txt                           Archivo license (SIL OFL 1.1)
+  anton-latin.woff2                 self-hosted display face — Anton (h1, doc numbers, card titles)
+  ibm-plex-mono-{400,500,600}-latin.woff2  self-hosted mono furniture — IBM Plex Mono
+  space-grotesk-latin-var.woff2     self-hosted body — Space Grotesk (variable 300–700)
+  OFL.txt                           font licenses (all SIL OFL 1.1)
 CNAME.example                    custom-domain placeholder (rename to CNAME)
 .nojekyll                         serve files as-is, skip Jekyll
 ```
 
-The display font (**Archivo**, © The Archivo Project Authors) is self-hosted, not
-CDN-loaded — no external dependency at runtime, and the weight ladder is real
-rather than snapped to the system font's nearest weight. It is licensed under the
-SIL Open Font License 1.1 (`fonts/OFL.txt`).
+The type is the locked field-manual stack — **Anton** (display), **IBM Plex Mono**
+(the load-bearing mono furniture: spec blocks, stamps, doc numbers), and **Space
+Grotesk** (body). All are self-hosted, not CDN-loaded — no external dependency at
+runtime — and all are licensed under the SIL Open Font License 1.1 (`fonts/OFL.txt`).
 
 > **Note:** the page carries no build/version changelog in its footer — that kind
 > of internal note lives here in the README only, never on the live storefront.
